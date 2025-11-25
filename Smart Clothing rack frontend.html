@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Hub Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: linear-gradient(135deg, #f5f7fb 0%, #e4e8f5 100%);
+            --card: #ffffff;
+            --primary: #6ecbff;
+            --success: #7ed957;
+            --warning: #ffcf52;
+            --danger: #ff6b6b;
+            --info: #8e8eff;
+            --text: #333;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --radius: 20px;
+        }
+
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Login Page */
+        .login-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            width: 100%;
+        }
+
+        .login-box {
+            background: #fff;
+            padding: 40px 35px;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            animation: fadeIn 1s ease;
+        }
+
+        .login-box h1 {
+            margin-bottom: 30px;
+            font-size: 2.3em;
+            color: #4c84ff;
+        }
+
+        .input-group { 
+            margin: 20px 0; 
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 1.1em;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(110,203,255,0.4);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, #6ecbff, #8e8eff);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(110,203,255,0.4);
+        }
+
+        /* Dashboard */
+        .dashboard { 
+            display: none; 
+            padding: 20px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.7em;
+            color: #4c84ff;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--danger);
+            padding: 12px 20px;
+            border-radius: 50px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            z-index: 100;
+            box-shadow: 0 4px 10px rgba(255,107,107,0.3);
+        }
+
+        .logout-btn:hover {
+            background: #e04e4e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255,107,107,0.4);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 0 auto;
+            max-width: 1000px;
+        }
+
+        /* Modern Cards */
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 30px 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+        }
+
+        .icon-container {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: rgba(110,203,255,0.1);
+        }
+
+        .icon-img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .value {
+            font-size: 2.8em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #4c84ff;
+        }
+
+        .unit {
+            font-size: 0.6em;
+            color: #666;
+        }
+
+        .status {
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .raining { 
+            background: rgba(110,203,255,0.2); 
+            color: #2a98d8; 
+        }
+        
+        .dry { 
+            background: rgba(126,217,87,0.2); 
+            color: #49a232; 
+        }
+
+        .on-path { 
+            background: rgba(126,217,87,0.2); 
+            color: #49a232; 
+        }
+        
+        .off-path { 
+            background: rgba(255,107,107,0.2); 
+            color: #ff4a4a; 
+        }
+
+        .sensor-label {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity:0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity:1; 
+                transform: translateY(0); 
+            }
+        }
+
+        .last-updated {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.7);
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .logout-btn {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+                display: inline-block;
+            }
+            
+            .dashboard {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOGIN -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h1><i class="fa fa-lock"></i> Sensor Hub</h1>
+
+            <div class="input-group">
+                <input id="user" value="admin" type="text" placeholder="Username"/>
+            </div>
+
+            <div class="input-group">
+                <input id="pass" value="1234" type="password" placeholder="Password"/>
+            </div>
+
+            <button class="login-btn" onclick="login()">LOGIN</button>
+            <p id="msg" style="color:red;margin-top:10px;"></p>
+        </div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard" class="dashboard">
+        <div class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </div>
+
+        <div class="header">
+            <h1>Smart Sensor Monitoring</h1>
+            <p>Real-time Environmental & Detection Data</p>
+        </div>
+
+        <div class="grid">
+            <!-- Rain Detector -->
+            <div class="card">
+                <div class="icon-container">
+                    <img class="icon-img" src="https://img.icons8.com/color/96/rain.png" alt="Rain Detector">
+                </div>
+                <h2 class="card-title">Rain Detector</h2>
+                <div class="sensor-label">Precipitation Status</div>
+                <div id="rain"></div>
+            </div>
+
+            <!-- Temperature -->
+            <div class="card">
+                <div class="icon-container">
+                    <img class="icon-img" src="https://img.icons8.com/color/96/thermometer.png" alt="Temperature">
+                </div>
+                <h2 class="card-title">Temperature</h2>
+                <div class="sensor-label">Ambient Temperature</div>
+                <div class="value" id="temp">--<span class="unit">°C</span></div>
+            </div>
+
+            <!-- Humidity -->
+            <div class="card">
+                <div class="icon-container">
+                    <img class="icon-img" src="https://img.icons8.com/color/96/humidity.png" alt="Humidity">
+                </div>
+                <h2 class="card-title">Humidity</h2>
+                <div class="sensor-label">Relative Humidity</div>
+                <div class="value" id="hum">--<span class="unit">%</span></div>
+            </div>
+
+            <!-- Obstacle Detection -->
+            <div class="card">
+                <div class="icon-container">
+                    <img class="icon-img" src="https://img.icons8.com/color/96/rock.png" alt="Obstacle Detection">
+                </div>
+                <h2 class="card-title">Obstacle Detection</h2>
+                <div class="sensor-label">Distance to Nearest Object</div>
+                <div class="value" id="dist">--<span class="unit">cm</span></div>
+            </div>
+
+            <!-- Line Detection -->
+            <div class="card">
+                <div class="icon-container">
+                    <img class="icon-img" src="https://img.icons8.com/color/96/route.png" alt="Line Detection">
+                </div>
+                <h2 class="card-title">Line Detection</h2>
+                <div class="sensor-label">Tracking Status</div>
+                <div id="line"></div>
+            </div>
+        </div>
+        
+        <div class="last-updated" id="lastUpdated">
+            Last updated: <span id="updateTime">--</span>
+        </div>
+    </div>
+
+    <script>
+        function login() {
+            if (user.value === "admin" && pass.value === "1234") {
+                loginPage.style.display = "none";
+                dashboard.style.display = "block";
+                updateData();
+                setInterval(updateData, 3000); // Update every 3 seconds
+            } else {
+                msg.innerText = "Invalid Login!";
+            }
+        }
+
+        function logout() {
+            location.reload();
+        }
+
+        function updateData() {
+            // Simulate sensor data updates
+            const rainStatus = Math.random() > 0.7 ? "RAINING !" : "No Rain";
+            const tempValue = (20 + Math.random() * 10).toFixed(2);
+            const humValue = (30 + Math.random() * 40).toFixed(2);
+            const distValue = (5 + Math.random() * 100).toFixed(1);
+            const lineStatus = Math.random() > 0.5 ? "On Path" : "Off Path";
+            
+            // Update the UI with new data
+            rain.innerHTML =
+                rainStatus === "RAINING !"
+                    ? <span class="status raining">Raining</span>
+                    : <span class="status dry">No Rain</span>;
+
+            temp.innerHTML = ${tempValue}<span class="unit">°C</span>;
+            hum.innerHTML = ${humValue}<span class="unit">%</span>;
+            dist.innerHTML = ${distValue}<span class="unit">cm</span>;
+
+            line.innerHTML =
+                lineStatus === "On Path"
+                    ? <span class="status on-path">On Path</span>
+                    : <span class="status off-path">Off Path</span>;
+                    
+            // Update last updated time
+            const now = new Date();
+            updateTime.textContent = now.toLocaleTimeString();
+        }
+    </script>
+</body>
+</html>
